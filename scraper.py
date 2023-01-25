@@ -12,6 +12,11 @@ class AssetSpider(scrapy.Spider):
         'https://www.essex.gov.uk/'
     ]
 
+    custom_settings = {
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 0.25,
+    }
+
     def __init__(self, extra_urls_file=None, *args, **kwargs):
         super(*args, **kwargs)
         if extra_urls_file is not None:
