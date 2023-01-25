@@ -1,3 +1,4 @@
+import json
 from urllib.parse import urlparse
 import scrapy
 
@@ -10,6 +11,12 @@ class AssetSpider(scrapy.Spider):
     start_urls = [
         'https://www.essex.gov.uk/'
     ]
+
+    def __init__(self, extra_urls_file=None, *args, **kwargs):
+        super(*args, **kwargs)
+        if extra_urls_file is not None:
+            with open(extra_urls_file, "rt", encoding="utf-8") as urls_file:
+                self.start_urls += json.load(urls_file)
 
     def parse(self, response):
         # Introspect all tags with an src or an href attribute for the target domain
