@@ -11,6 +11,9 @@ class AssetSpider(scrapy.Spider):
     start_urls = [
         'https://www.essex.gov.uk/'
     ]
+    allowed_domains = [
+        "www.essex.gov.uk"
+    ]
 
     custom_settings = {
         'AUTOTHROTTLE_ENABLED': True,
@@ -43,5 +46,8 @@ class AssetSpider(scrapy.Spider):
             if FOLLOW_DOMAIN in link or relative:
                 if '?' in link:
                     # Skip parameterised requests
+                    continue
+                if link.endswith(".pdf"):
+                    # Skip things that are obviously assets
                     continue
                 yield response.follow(link, callback=self.parse)
