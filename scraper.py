@@ -1,3 +1,4 @@
+import json
 from urllib.parse import urlparse
 import scrapy
 
@@ -10,6 +11,20 @@ class AssetSpider(scrapy.Spider):
     start_urls = [
         'https://www.essex.gov.uk/'
     ]
+    allowed_domains = [
+        "www.essex.gov.uk"
+    ]
+
+    custom_settings = {
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 0.25,
+    }
+
+    def __init__(self, extra_urls_file=None, *args, **kwargs):
+        super(*args, **kwargs)
+        if extra_urls_file is not None:
+            with open(extra_urls_file, "rt", encoding="utf-8") as urls_file:
+                self.start_urls += json.load(urls_file)
 
     def parse(self, response):
         # Introspect all tags with an src or an href attribute for the target domain
@@ -31,5 +46,8 @@ class AssetSpider(scrapy.Spider):
             if FOLLOW_DOMAIN in link or relative:
                 if '?' in link:
                     # Skip parameterised requests
+                    continue
+                if link.endswith(".pdf"):
+                    # Skip things that are obviously assets
                     continue
                 yield response.follow(link, callback=self.parse)

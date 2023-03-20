@@ -24,3 +24,10 @@ Ensure you have Python 3.9 installed, as well as pipenv. Then run the following:
 
     pipenv install
     pipenv run scrapy runspider scraper.py -o ./output/output.json -o ./output/output.csv
+
+By default, this spider will crawl the homepage only. If you also have extra urls to crawl these can be passed as an argument. For example, to also crawl all news items, even unreachable ones, you can export them from the Contentful API and add these:
+
+    contentful space export ...
+    jq -rc '.entries | [.[] | select(.sys.contentType.sys.id | contains("news")) | ("https://www.essex.gov.uk/news/" + .fields.slug["en-GB"])]' < contentful-export.json > extra_urls.json
+    pipenv install
+    pipenv run scrapy runspider scraper.py -o ./output/output.json -o ./output/output.csv -a extra_urls_file=/Users/mwilkes/play/ecc/extra_urls.json
